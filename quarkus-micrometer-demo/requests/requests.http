@@ -1,0 +1,17 @@
+### Check Palindrome and Increment Counter
+GET http://localhost:8080/palindrome/counter/check/racecar
+
+### Check Palindrome and Time the Operation
+GET http://localhost:8080/palindrome/timer/check/level
+
+### Add Another Palindrome for Counter
+GET http://localhost:8080/palindrome/counter/check/madam
+
+### Check Non-Palindrome for Timer
+GET http://localhost:8080/palindrome/timer/check/hello
+
+### Add Another Palindrome for Counter
+GET http://localhost:8080/palindrome/counter/check/rotor
+
+### Clear the List
+DELETE http://localhost:8080/palindrome/empty-list

@@ -3,10 +3,7 @@ package at.htlleonding.boundary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 
 import java.util.LinkedList;
 
@@ -23,7 +20,7 @@ public class PalindromeResource {
 
     @GET
     @Path("counter/check/{input}")
-    public boolean checkPalindromeCounter(String input) {
+    public boolean checkPalindromeCounter(@PathParam("input") String input) {
         list.add(input);
 
         registry.counter("palindrome.counter").increment();
@@ -33,7 +30,7 @@ public class PalindromeResource {
 
     @GET
     @Path("timer/check/{input}")
-    public boolean checkPalindromeAndTimer(String input) {
+    public boolean checkPalindromeAndTimer(@PathParam("input") String input) {
         list.add(input);
 
         Timer.Sample sample = Timer.start(registry);
