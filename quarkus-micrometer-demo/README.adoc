@@ -1,0 +1,35 @@
+= Quarkus Micrometer Demo
+
+This is a demo project for showcasing the integration of Micrometer with Quarkus.
+
+For demonstration this project uses the following technologies:
+
+* Quarkus (simple REST-endpoints)
+* Micrometer Prometheus
+* Prometheus
+* Grafana
+
+== Step-by-Step Guide
+
+=== Step 1: Start the Quarkus Application
+
+[source,bash]
+----
+quarkus dev --clean
+----
+
+=== Step 2: Check the Prometheus Metrics
+
+Open the following URL in your browser: http://localhost:8080/q/metrics
+
+=== Step 3: Start Prometheus & Grafana
+
+Simply run the docker-compose file in the `grafana-prometheus` directory.
+
+=== Step 4: Check out the Prometheus Dashboard
+
+Open the following URL in your browser: http://localhost:9090
+
+=== Step 5: Check out the Grafana Dashboard
+
+Open the following URL in your browser: http://localhost:3000
