@@ -11,11 +11,12 @@ For demonstration this project uses the following technologies:
 
 == Step-by-Step Guide
 
-=== Step 1: Start the Quarkus Application
+=== Step 1: Run the docker-compose file
 
 [source,bash]
 ----
-quarkus dev --clean
+docker compose -f ./src/main/docker/docker-compose.yml -p docker up -d
+
 ----
 
 === Step 2: Check the Prometheus Metrics
