@@ -29,8 +29,6 @@ services:
     restart: always
     networks:
       - monitoring
-    command: >
-      bash -c './mvnw clean package && java -jar target/quarkus-run.jar'
 
 networks:
   monitoring:

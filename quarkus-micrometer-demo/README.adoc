@@ -11,21 +11,23 @@ For demonstration this project uses the following technologies:
 
 == Step-by-Step Guide
 
-=== Step 1: Run the docker-compose file
+=== Step 1: Package the Quarkus Application
+
+[source,bash]
+----
+mvn clean package
+----
+
+=== Step 2: Run the docker-compose file
 
 [source,bash]
 ----
 docker compose -f ./src/main/docker/docker-compose.yml -p docker up -d
-
 ----
 
-=== Step 2: Check the Prometheus Metrics
+=== Step 3: Check the Prometheus Metrics
 
 Open the following URL in your browser: http://localhost:8080/q/metrics
-
-=== Step 3: Start Prometheus & Grafana
-
-Simply run the docker-compose file in the `grafana-prometheus` directory.
 
 === Step 4: Check out the Prometheus Dashboard
 
