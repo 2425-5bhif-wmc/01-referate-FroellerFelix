@@ -170,27 +170,149 @@ Grundlagen, Micrometer und Abgrenzung zu Tracing
 === Was ist Micrometer?
 
 * Java-basierte Bibliothek für Metrik-Sammlung.
-** Wird in der offiziellen Quarkus-Dokumentation empfohlen. (https://quarkus.io/guides/telemetry-micrometer)
+** https://quarkus.io/guides/telemetry-micrometer[Wird in der offiziellen Quarkus-Dokumentation empfohlen.]
 * Unterstützt verschiedene Metrik-Typen (Zähler, Timer, Histogramm).
-* Prometheus-kompatibel. (https://prometheus.io/)
-** Sammelt und speichert die Metriken entweder im RAM oder in einer Time Series Database. (https://prometheus.io/docs/prometheus/latest/storage/)
-
+* https://prometheus.io/[Prometheus-kompatibel.]
+** https://prometheus.io/docs/prometheus/latest/storage/[Sammelt und speichert die Metriken entweder im RAM oder in einer Time Series Database.]
 
 === Micrometer in der Praxis
 
 * Integration mit Quarkus:
-  - Einfaches Hinzufügen durch Erweiterungen (`quarkus-micrometer`).
-  - Erfassung von JVM-Metriken (Heap, Garbage Collection, Threads).
+- Einfaches Hinzufügen durch Erweiterungen (`quarkus-micrometer`).
+- Erfassung von JVM-Metriken (Heap, Garbage Collection, Threads).
 * Visualisierung: Daten an Prometheus senden, mit Grafana anzeigen.
 
 === Live Demo: Micrometer in Quarkus
 
+image::architecture-prometheus-grafana.png[]
+
+=== Schritt 1: Micrometer in Quarkus einbinden
+
+. `quarkus-micrometer-prometheus`-Dependency hinzufügen.
+
+=== Schritt 2: Metriken sammeln
+
+Eigene Metriken definieren.
+
+[source,java]
+----
+@Path("/palindrome")
+@Produces("application/json")
+public class PalindromeResource {
+    private final MeterRegistry registry;
+    private final LinkedList<String> list = new LinkedList<>();
+
+    public PalindromeResource(MeterRegistry registry) {
+        this.registry = registry;
+        registry.gaugeCollectionSize("palindrome.list.size", Tags.empty(), list);
+    }
+
+    @GET
+    @Path("counter/check/{input}")
+    public boolean checkPalindromeCounter(@PathParam("input") String input) {
+        list.add(input);
+
+        registry.counter("palindrome.counter").increment();
+        boolean result = internalCheckPalindrome(input);
+        return result;
+    }
+
+    @GET
+    @Path("timer/check/{input}")
+    public boolean checkPalindromeAndTimer(@PathParam("input") String input) {
+        list.add(input);
+
+        Timer.Sample sample = Timer.start(registry);
+        boolean result = internalCheckPalindrome(input);
+        sample.stop(registry.timer("palindrome.timer"));
+        return result;
+    }
+
+    private boolean internalCheckPalindrome(String input) {
+        int left = 0;
+        int right = input.length() - 1;
+
+        while (left < right) {
+            if (input.charAt(left) != input.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    @DELETE
+    @Path("empty-list")
+    public void emptyList() {
+        list.clear();
+    }
+}
+----
+
+=== Schritt 3: Package erstellen
+
+[source,bash]
+----
+mvn package
+----
+
+=== Schritt 4: Container mit Quarkus, Prometheus und Grafana starten
+
+[source,yaml]
+----
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: always
+    networks:
+      - monitoring
+
+  quarkus:
+    build:
+      context: ../../../
+      dockerfile: ./src/main/docker/Dockerfile.jvm
+    container_name: quarkus
+    ports:
+      - "8080:8080" # Optional, for host access
+    restart: always
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+----
+
+=== Schritt 5: Prometheus
+
+http://localhost:9090
+
+=== Schritt 6: Grafana
+
+http://localhost:3000
+
 === Alternativen zu Micrometer
 
 * Dropwizard Metrics:
-  - Älter, weniger flexibel.
+- Älter, weniger flexibel.
 * Spring Boot Actuator (eingebaut, aber weniger universell).
-* OpenTelemetry (vollständige Lösung für Telemetrie inkl. Tracing).
+* OpenTelemetry (vollständige Lösung für Telemetrie inkl.
+Tracing).
 
 == Abgrenzung zu Tracing
 
@@ -202,14 +324,44 @@ Grundlagen, Micrometer und Abgrenzung zu Tracing
 === Beispiel
 
 * Telemetrie:
-  - Durchschnittliche Antwortzeit eines Services.
+- Durchschnittliche Antwortzeit eines Services.
 * Tracing:
-  - Details zu einem spezifischen Request durch mehrere Microservices.
+- Details zu einem spezifischen Request durch mehrere Microservices.
 
 == OpenTelemetry vs OpenTracing
 
 * OpenTracing:
-  - Nur Tracing, Standard für verteilte Systeme.
+- Nur Tracing, Standard für verteilte Systeme.
 * OpenTelemetry:
-  - Nachfolger, umfasst Tracing, Metriken und Logs.
-  - Wachsende Unterstützung in der Community.
+- Nachfolger, umfasst Tracing, Metriken und Logs.
+- Wachsende Unterstützung in der Community.
+
+== Demonstration im Kubernetes-Cluster
+
+=== Schritt 1: Start des Clusters
+
+[source,bash]
+----
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+----
+
+[source,bash]
+----
+kubectl create namespace observability
+kubectl apply -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.44.0/jaeger-operator.yaml -n observability
+----
+
+[source,bash]
+----
+git clone https://github.com/cankush625/Jaeger.git
+cd ./Jaeger/deploy_jaeger
+kubectl apply -k jaeger_instance
+----
+
+=== Schritt 2: Cluster säubern und stoppen
+
+[source,bash]
+----
+kubectl delete -f k8s/
+minikube stop
+----
