@@ -1,4 +1,4 @@
-= Telemetrie: Grundlagen, Micrometer und Abgrenzung zu Tracing
+= Telemetrie
 :author: Felix Fröller
 :email: f.froeller@students.htl-leonding.ac.at
 :revnumber: 1.0
@@ -7,7 +7,7 @@
 :encoding: utf-8
 :lang: de
 :doctype: article
-//:icons: font
+// :icons: font
 :customcss: css/presentation.css
 //:revealjs_customtheme: css/sky.css
 //:revealjs_customtheme: css/black.css
@@ -33,7 +33,7 @@ endif::[]
 :title-slide-transition: zoom
 :title-slide-transition-speed: fast
 
-Testing filter by changing documentation file
+Grundlagen, Micrometer und Abgrenzung zu Tracing
 //
 // == Slide w/ image
 //
@@ -149,28 +149,32 @@ Testing filter by changing documentation file
 === Was ist Telemetrie?
 
 * Definition: Automatische Sammlung von Metriken, Logs und Events.
-* Ziel: Systemzustand analysieren und optimieren.
+* Aufgabe: Systemzustand analysieren und optimieren.
 * Bestandteile: Metriken (Zähler, Timer), Logs, Tracing.
 
 === Wie Telemetrie dieses Problem löst
 
-* Zentralisierte Einblicke in Systemzustände.
+* Einblicke in Systemzustände.
 * Erleichtert Fehlerdiagnose und Performance-Monitoring.
-* Daten für Skalierung und Optimierung nutzbar.
+** Option einer grafischen Darstellung
+** Automatisierte Alarme und Benachrichtigungen.
 
-=== Beispiel: Telemetrie in der Automobilindustrie
+=== Beispiel: Kubernetes-Cluster
 
-* Nutzung in vernetzten Fahrzeugen.
-* Überwachung von Sensoren, Echtzeit-Diagnosen.
-* Verbesserung von Sicherheit, Wartung und Benutzererfahrung.
+* Metriken: CPU- und Speicherauslastung.
+* Logs: Fehlermeldungen und Debug-Informationen.
+* Tracing: Nachverfolgung von Requests durch verschiedene Services.
 
 == Micrometer
 
 === Was ist Micrometer?
 
 * Java-basierte Bibliothek für Metrik-Sammlung.
-* Unterstützt viele Backends: Prometheus, Grafana, etc.
-* Abstraktionsschicht für verschiedene Monitoring-Tools.
+** Wird in der offiziellen Quarkus-Dokumentation empfohlen. (https://quarkus.io/guides/telemetry-micrometer)
+* Unterstützt verschiedene Metrik-Typen (Zähler, Timer, Histogramm).
+* Prometheus-kompatibel. (https://prometheus.io/)
+** Sammelt und speichert die Metriken entweder im RAM oder in einer Time Series Database. (https://prometheus.io/docs/prometheus/latest/storage/)
+
 
 === Micrometer in der Praxis
 
@@ -178,6 +182,8 @@ Testing filter by changing documentation file
   - Einfaches Hinzufügen durch Erweiterungen (`quarkus-micrometer`).
   - Erfassung von JVM-Metriken (Heap, Garbage Collection, Threads).
 * Visualisierung: Daten an Prometheus senden, mit Grafana anzeigen.
+
+=== Live Demo: Micrometer in Quarkus
 
 === Alternativen zu Micrometer
 
@@ -190,11 +196,8 @@ Testing filter by changing documentation file
 
 === Theorie
 
-* Telemetrie:
-  - Fokus: Aggregierte Daten (z. B. Request-Raten, Latenzen).
-* Tracing:
-  - Fokus: Nachverfolgung einzelner Requests in verteilten Systemen.
-  - Tools: OpenTracing, OpenTelemetry.
+* Telemetrie: Sammlung von Metriken, Logs und Events.
+* Tracing: Nachverfolgung von Requests durch verschiedene Services.
 
 === Beispiel
 
