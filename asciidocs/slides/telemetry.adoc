@@ -338,30 +338,58 @@ Tracing).
 
 == Demonstration im Kubernetes-Cluster
 
-=== Schritt 1: Start des Clusters
+=== Schritt 1: Minikube starten
 
-[source,bash]
+[sources,bash]
 ----
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
-----
-
-[source,bash]
-----
-kubectl create namespace observability
-kubectl apply -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.44.0/jaeger-operator.yaml -n observability
+minikube start --cpus=4 --memory=8g --driver=docker
 ----
 
-[source,bash]
+=== Schritt 2: Jaeger installieren
+
+Falls noch nicht vorhanden, Git-Repository klonen.
+
+[sources,bash]
 ----
-git clone https://github.com/cankush625/Jaeger.git
-cd ./Jaeger/deploy_jaeger
-kubectl apply -k jaeger_instance
+git clone https://github.com/jaegertracing/jaeger.git
 ----
 
-=== Schritt 2: Cluster säubern und stoppen
+In den Pfad `jaeger/examples/hotrod/kubernetes/base` wechseln.
 
-[source,bash]
+[sources,bash]
 ----
-kubectl delete -f k8s/
-minikube stop
+cd jaeger/examples/hotrod/kubernetes/base
 ----
+
+=== Schritt 3: Jaeger starten
+
+[sources,bash]
+----
+kubectl apply -k ./all-in-one
+----
+
+=== Schritt 4: HotROD-Beispiel starten
+
+[sources,bash]
+----
+kubectl apply -k hotrod.yaml
+----
+
+=== Schritt 5: Port-Forwarding
+
+[sources,bash]
+----
+kubectl port-forward service/jaeger 16686:16686
+----
+
+[sources,bash]
+----
+kubectl port-forward service/example-hotrod 9000:8080
+----
+
+=== Schritt 6: Jaeger-UI öffnen
+
+http://localhost:16686
+
+http://localhost:9000
+
