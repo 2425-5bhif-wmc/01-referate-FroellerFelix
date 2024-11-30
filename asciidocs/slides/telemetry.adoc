@@ -43,7 +43,7 @@ Grundlagen, Micrometer und Abgrenzung zu Tracing
 ** Fehlerquellen identifizieren
 ** Performance optimieren
 * Herausforderungen
-** Komplexe Anwendungen (Microservices, verteilte Systeme).
+** Analyse von komplexen Anwendungen (Microservices, verteilte Systeme).
 ** Mangelnde Übersicht und fehlende Kennzahlen.
 
 === Was ist Telemetrie?
@@ -63,7 +63,9 @@ Grundlagen, Micrometer und Abgrenzung zu Tracing
 
 * Metriken: CPU- und Speicherauslastung.
 * Logs: Fehlermeldungen und Debug-Informationen.
-* Tracing: Nachverfolgung von Requests durch verschiedene Services.
+* Tracing
+** Nachverfolgung von Request durch verschiedene Services. https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7[(request-flows)]
+** Bottlenecks identifizieren
 
 == Micrometer
 
@@ -86,13 +88,15 @@ Grundlagen, Micrometer und Abgrenzung zu Tracing
 
 image::architecture-prometheus-grafana.png[]
 
+https://exceptionly.com/2022/01/18/monitoring-quarkus-with-prometheus-and-grafana/
+
 === Schritt 1: Micrometer in Quarkus einbinden
 
-. `quarkus-micrometer-prometheus`-Dependency hinzufügen.
+`quarkus-micrometer-prometheus`-Dependency hinzufügen.
 
 === Schritt 2: Metriken sammeln
 
-Eigene Metriken definieren.
+https://www.baeldung.com/quarkus-micrometer[Eigene Metriken definieren.]
 
 [source,java]
 ----
@@ -230,7 +234,7 @@ Tracing).
 
 == Live Demo: Tracing mit Jaeger
 
-image::architecture-jaeger.png[]
+image::jaeger-logo.png[jaeger-logo,width=200]
 
 === Schritt 1: Minikube starten
 
@@ -295,4 +299,11 @@ Verwendung in k8s-Cluster um einen Überblick über den Systemzustand zu erhalte
 
 == Danke für eure Aufmerksamkeit!
 
- im
+== Quellen
+
+* https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7
+* https://quarkus.io/guides/telemetry-micrometer
+* https://prometheus.io/
+* https://prometheus.io/docs/prometheus/latest/storage/
+* https://www.baeldung.com/quarkus-micrometer
+* https://github.com/jaegertracing/jaeger
