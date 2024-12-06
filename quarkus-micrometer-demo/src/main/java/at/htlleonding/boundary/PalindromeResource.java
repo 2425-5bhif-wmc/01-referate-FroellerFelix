@@ -24,8 +24,7 @@ public class PalindromeResource {
         list.add(input);
 
         registry.counter("palindrome.counter").increment();
-        boolean result = internalCheckPalindrome(input);
-        return result;
+        return internalCheckPalindrome(input);
     }
 
     @GET

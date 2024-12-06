@@ -80,7 +80,7 @@ Grundlagen, Micrometer und Abgrenzung zu Tracing
 === Micrometer in der Praxis
 
 * Integration mit Quarkus:
-- Einfaches Hinzufügen durch Erweiterungen (`quarkus-micrometer`).
+- Einfaches Hinzufügen durch Erweiterungen (`micrometer-registry-prometheus`).
 - Erfassung von JVM-Metriken (Heap, Garbage Collection, Threads).
 * Visualisierung: Daten an Prometheus senden, mit Grafana anzeigen.
 
@@ -263,14 +263,14 @@ cd jaeger/examples/hotrod/kubernetes/base
 
 [sources,bash]
 ----
-kubectl apply -k ./all-in-one
+kubectl apply -k ./jaeger-all-in-one
 ----
 
 === Schritt 4: HotROD-Beispiel starten
 
 [sources,bash]
 ----
-kubectl apply -k hotrod.yaml
+kubectl apply -k ./hotrod
 ----
 
 === Schritt 5: Port-Forwarding
