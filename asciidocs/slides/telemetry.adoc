@@ -43,7 +43,7 @@ Grundlagen, Micrometer und Abgrenzung zu Tracing
 ** Fehlerquellen identifizieren
 ** Performance optimieren
 * Herausforderungen
-** Analyse von komplexen Anwendungen (Microservices, verteilte Systeme).
+** Analyse von komplexen Anwendungen (z.B.: k8s).
 ** Mangelnde Übersicht und fehlende Kennzahlen.
 
 === Was ist Telemetrie?
