@@ -559,12 +559,19 @@ Span span = tracer.spanBuilder("sendEmails").startSpan();
   -p 16686:16686 \
   -p 14268:14268 \
   -p 9411:9411 \
-  jaegertracing/all-in-one:1.6.0</code></pre></div></div></div></section><section id="_kubernetes"><h2>Kubernetes</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">miniKube start --cpus 15 --memory 8g --driver=docker</code></pre></div></div>
+  jaegertracing/all-in-one:1.6.0</code></pre></div></div></div></section><section id="_kubernetes"><h2>Kubernetes</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">miniKube start --cpus 15 --memory=8g --driver=docker</code></pre></div></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml</code></pre></div></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl create namespace observability <i class="conum" data-value="1"></i><b>(1)</b>
 kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability <i class="conum" data-value="2"></i><b>(2)</b></code></pre></div></div>
 <div class="paragraph"><p>Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:</p></div>
-<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl apply -f .</code></pre></div></div></div></section></section>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl apply -f .</code></pre></div></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">export WORKING_DIR=/tmp/_working_dir
+export NAMESPACE=observability  # Change if needed</code></pre></div></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">./generate_certs.sh</code></pre></div></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl create secret tls jaeger-operator-service-cert \
+  --cert=${WORKING_DIR}/user.jaeger.crt \
+  --key=${WORKING_DIR}/user.jaeger.key \
+  -n observability</code></pre></div></div></div></section></section>
 <section id="_danke_für_eure_aufmerksamkeit"><h2>Danke für eure Aufmerksamkeit!</h2></section>
 <section id="_quellen"><h2>Quellen</h2><div class="slide-content"><div class="ulist"><ul><li><p><a href="https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7" class="bare">https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7</a></p></li><li><p><a href="https://quarkus.io/guides/telemetry-micrometer" class="bare">https://quarkus.io/guides/telemetry-micrometer</a></p></li><li><p><a href="https://prometheus.io/" class="bare">https://prometheus.io/</a></p></li><li><p><a href="https://prometheus.io/docs/prometheus/latest/storage/" class="bare">https://prometheus.io/docs/prometheus/latest/storage/</a></p></li><li><p><a href="https://www.baeldung.com/quarkus-micrometer" class="bare">https://www.baeldung.com/quarkus-micrometer</a></p></li><li><p><a href="https://github.com/jaegertracing/jaeger" class="bare">https://github.com/jaegertracing/jaeger</a></p></li></ul></div></div></section></div></div><script src="revealjs/dist/reveal.js"></script><script>Array.prototype.slice.call(document.querySelectorAll('.slides section')).forEach(function(slide) {
   if (slide.getAttribute('data-background-color')) return;
