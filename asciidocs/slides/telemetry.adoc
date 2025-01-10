@@ -348,7 +348,7 @@ docker run -d --name jaeger \
 
 [source,bash]
 ----
-miniKube start --cpus 15 --memory 8g --driver=docker
+miniKube start --cpus 15 --memory=8g --driver=docker
 ----
 
 [source,bash]
@@ -367,6 +367,25 @@ Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:
 [source,bash]
 ----
 kubectl apply -f .
+----
+
+[source,bash]
+----
+export WORKING_DIR=/tmp/_working_dir
+export NAMESPACE=observability  # Change if needed
+----
+
+[source,bash]
+----
+./generate_certs.sh
+----
+
+[source,bash]
+----
+kubectl create secret tls jaeger-operator-service-cert \
+  --cert=${WORKING_DIR}/user.jaeger.crt \
+  --key=${WORKING_DIR}/user.jaeger.key \
+  -n observability
 ----
 
 == Danke für eure Aufmerksamkeit!
