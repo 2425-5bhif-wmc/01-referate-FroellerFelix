@@ -413,10 +413,100 @@ ul.byline {
 ul.byline li + li {
   margin-top: 0.25em;
 }
-</style><link rel="stylesheet" href="./fonts/fontawesome/css/all.css"><link rel="stylesheet" href="css/presentation.css"></head><body><div class="reveal"><div class="slides"><section class="title" data-state="title" data-transition="zoom" data-transition-speed="fast"><h1>Telemetrie</h1><div class="preamble"><div class="paragraph"><p>Teil 2: Tracing</p></div></div><p class="byline">
+</style><link rel="stylesheet" href="./fonts/fontawesome/css/all.css"><link rel="stylesheet" href="css/presentation.css"></head><body><div class="reveal"><div class="slides"><section class="title" data-state="title" data-transition="zoom" data-transition-speed="fast"><h1>Telemetrie</h1><div class="preamble"><div class="paragraph"><p>Grundlagen, Micrometer und abgrenzung zu Tracing</p></div></div><p class="byline">
   <span class="author">Felix Fröller <a href="mailto:f.froeller@students.htl-leonding.ac.at">f.froeller@students.htl-leonding.ac.at</a></span>
   </p></section>
-<section><section id="_tracing"><h2>Tracing</h2></section><section id="_welches_problem_gibt_es"><h2>Welches Problem gibt es?</h2><div class="slide-content"><div class="ulist"><ul><li><p>Identifizierung von Performance-Problemen</p></li><li><p>Bottleneck identifizieren</p></li><li><p>Warum dauert ein Request so lange?</p></li></ul></div></div></section><section id="_was_ist_tracing"><h2>Was ist Tracing?</h2><div class="slide-content"><div class="ulist"><ul><li><p>Nachverfolgung von Requests auf der Seite des Servers</p></li><li><p>Analyse von vielen Requests</p></li><li><p>Zeit zwischen einzelnen Schritten messen</p></li></ul></div></div></section><section id="_was_ist_ein_trace"><h2>Was ist ein Trace?</h2><div class="slide-content"><div class="imageblock"><img src="images/spans-traces.png" alt="spans-traces"></div></div></section><section id="_daten_sammeln_mit_opentelemetry"><h2>Daten Sammeln mit OpenTelemetry</h2><div class="slide-content"><div class="paragraph"><p>OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von Metriken, Logs und Traces für Observability in modernen Anwendungen.</p></div></div></section></section>
+<section><section id="_einleitung"><h2>Einleitung</h2></section><section id="_welches_problem_gibt_es"><h2>Welches Problem gibt es?</h2><div class="slide-content"><div class="ulist"><ul><li><p>Aufgabenstellung</p><div class="ulist"><ul><li><p>Fehlerquellen identifizieren</p></li><li><p>Performance optimieren</p></li></ul></div></li><li><p>Herausforderungen</p><div class="ulist"><ul><li><p>Analyse von komplexen Anwendungen (z.B.: k8s).</p></li><li><p>Mangelnde Übersicht und fehlende Kennzahlen.</p></li></ul></div></li></ul></div></div></section><section id="_was_ist_telemetrie"><h2>Was ist Telemetrie?</h2><div class="slide-content"><div class="ulist"><ul><li><p>Definition: Automatische Sammlung von Metriken, Logs und Events.</p></li><li><p>Aufgabe: Systemzustand analysieren und optimieren.</p></li><li><p>Bestandteile: Metriken (Zähler, Timer), Logs, Tracing.</p></li></ul></div></div></section><section id="_wie_telemetrie_dieses_problem_löst"><h2>Wie Telemetrie dieses Problem löst</h2><div class="slide-content"><div class="ulist"><ul><li><p>Einblicke in Systemzustände.</p></li><li><p>Erleichtert Fehlerdiagnose und Performance-Monitoring.</p><div class="ulist"><ul><li><p>Option einer grafischen Darstellung</p></li><li><p>Automatisierte Alarme und Benachrichtigungen.</p></li></ul></div></li></ul></div></div></section><section id="_beispiel_kubernetes_cluster"><h2>Beispiel: Kubernetes-Cluster</h2><div class="slide-content"><div class="ulist"><ul><li><p>Metriken: CPU- und Speicherauslastung.</p></li><li><p>Logs: Fehlermeldungen und Debug-Informationen.</p></li><li><p>Tracing</p><div class="ulist"><ul><li><p>Nachverfolgung von Request durch verschiedene Services. <a href="https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7">(request-flows)</a></p></li><li><p>Bottlenecks identifizieren</p></li></ul></div></li></ul></div></div></section></section>
+<section><section id="_micrometer"><h2>Micrometer</h2></section><section id="_was_ist_micrometer"><h2>Was ist Micrometer?</h2><div class="slide-content"><div class="ulist"><ul><li><p>Java-basierte Bibliothek für Metrik-Sammlung.</p><div class="ulist"><ul><li><p><a href="https://quarkus.io/guides/telemetry-micrometer">Wird in der offiziellen Quarkus-Dokumentation empfohlen.</a></p></li></ul></div></li><li><p>Unterstützt verschiedene Metrik-Typen (Zähler, Timer, Histogramm).</p></li><li><p><a href="https://prometheus.io/">Prometheus-kompatibel.</a></p><div class="ulist"><ul><li><p><a href="https://prometheus.io/docs/prometheus/latest/storage/">Sammelt und speichert die Metriken entweder im RAM oder in einer Time Series Database.</a></p></li></ul></div></li></ul></div></div></section><section id="_micrometer_in_der_praxis"><h2>Micrometer in der Praxis</h2><div class="slide-content"><div class="ulist"><ul><li><p>Integration mit Quarkus:</p><div class="ulist"><ul><li><p>Einfaches Hinzufügen durch Erweiterungen (<code>micrometer-registry-prometheus</code>).</p></li><li><p>Erfassung von JVM-Metriken (Heap, Garbage Collection, Threads).</p></li></ul></div></li><li><p>Visualisierung: Daten an Prometheus senden, mit Grafana anzeigen.</p></li></ul></div></div></section><section id="_live_demo_micrometer_in_quarkus"><h2>Live Demo: Micrometer in Quarkus</h2><div class="slide-content"><div class="imageblock"><img src="images/architecture-prometheus-grafana.png" alt="architecture prometheus grafana"></div>
+<div class="paragraph"><p><a href="https://exceptionly.com/2022/01/18/monitoring-quarkus-with-prometheus-and-grafana/" class="bare">https://exceptionly.com/2022/01/18/monitoring-quarkus-with-prometheus-and-grafana/</a></p></div></div></section><section id="_schritt_1_micrometer_in_quarkus_einbinden"><h2>Schritt 1: Micrometer in Quarkus einbinden</h2><div class="slide-content"><div class="paragraph"><p><code>quarkus-micrometer-prometheus</code>-Dependency hinzufügen.</p></div></div></section><section id="_schritt_2_metriken_sammeln"><h2>Schritt 2: Metriken sammeln</h2><div class="slide-content"><div class="paragraph"><p><a href="https://www.baeldung.com/quarkus-micrometer">Eigene Metriken definieren.</a></p></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-java hljs" data-noescape="true" data-lang="java">@Path("/palindrome")
+@Produces("application/json")
+public class PalindromeResource {
+    private final MeterRegistry registry;
+    private final LinkedList&lt;String&gt; list = new LinkedList&lt;&gt;();
+
+    public PalindromeResource(MeterRegistry registry) {
+        this.registry = registry;
+        registry.gaugeCollectionSize("palindrome.list.size", Tags.empty(), list);
+    }
+
+    @GET
+    @Path("counter/check/{input}")
+    public boolean checkPalindromeCounter(@PathParam("input") String input) {
+        list.add(input);
+
+        registry.counter("palindrome.counter").increment();
+        boolean result = internalCheckPalindrome(input);
+        return result;
+    }
+
+    @GET
+    @Path("timer/check/{input}")
+    public boolean checkPalindromeAndTimer(@PathParam("input") String input) {
+        list.add(input);
+
+        Timer.Sample sample = Timer.start(registry);
+        boolean result = internalCheckPalindrome(input);
+        sample.stop(registry.timer("palindrome.timer"));
+        return result;
+    }
+
+    private boolean internalCheckPalindrome(String input) {
+        int left = 0;
+        int right = input.length() - 1;
+
+        while (left &lt; right) {
+            if (input.charAt(left) != input.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    @DELETE
+    @Path("empty-list")
+    public void emptyList() {
+        list.clear();
+    }
+}</code></pre></div></div></div></section><section id="_schritt_3_package_erstellen"><h2>Schritt 3: Package erstellen</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">mvn package</code></pre></div></div></div></section><section id="_schritt_4_container_mit_quarkus_prometheus_und_grafana_starten"><h2>Schritt 4: Container mit Quarkus, Prometheus und Grafana starten</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-yaml hljs" data-noescape="true" data-lang="yaml">services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: always
+    networks:
+      - monitoring
+
+  quarkus:
+    build:
+      context: ../../../
+      dockerfile: ./src/main/docker/Dockerfile.jvm
+    container_name: quarkus
+    ports:
+      - "8080:8080" # Optional, for host access
+    restart: always
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge</code></pre></div></div></div></section><section id="_schritt_5_prometheus"><h2>Schritt 5: Prometheus</h2><div class="slide-content"><div class="paragraph"><p><a href="http://localhost:9090" class="bare">http://localhost:9090</a></p></div></div></section><section id="_schritt_6_grafana"><h2>Schritt 6: Grafana</h2><div class="slide-content"><div class="paragraph"><p><a href="http://localhost:3000" class="bare">http://localhost:3000</a></p></div></div></section><section id="_alternativen_zu_micrometer"><h2>Alternativen zu Micrometer</h2><div class="slide-content"><div class="ulist"><ul><li><p>Dropwizard Metrics:</p><div class="ulist"><ul><li><p>Älter, weniger flexibel.</p></li></ul></div></li><li><p>Spring Boot Actuator (eingebaut, aber weniger universell).</p></li><li><p>OpenTelemetry (vollständige Lösung für Telemetrie inkl.
+Tracing).</p></li></ul></div></div></section></section>
+<section><section id="_tracing"><h2>Tracing</h2></section><section id="_welches_problem_gibt_es_2"><h2>Welches Problem gibt es?</h2><div class="slide-content"><div class="ulist"><ul><li><p>Identifizierung von Performance-Problemen</p></li><li><p>Bottleneck identifizieren</p></li><li><p>Warum dauert ein Request so lange?</p></li></ul></div></div></section><section id="_was_ist_tracing"><h2>Was ist Tracing?</h2><div class="slide-content"><div class="ulist"><ul><li><p>Nachverfolgung von Requests auf der Seite des Servers</p></li><li><p>Analyse von vielen Requests</p></li><li><p>Zeit zwischen einzelnen Schritten messen</p></li></ul></div></div></section><section id="_was_ist_ein_trace"><h2>Was ist ein Trace?</h2><div class="slide-content"><div class="imageblock"><img src="images/spans-traces.png" alt="spans-traces"></div></div></section><section id="_daten_sammeln_mit_opentelemetry"><h2>Daten Sammeln mit OpenTelemetry</h2><div class="slide-content"><div class="paragraph"><p>OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von Metriken, Logs und Traces für Observability in modernen Anwendungen.</p></div></div></section></section>
 <section><section id="_livedemo_leovote_tracing_mit_jaeger"><h2>LiveDemo: LeoVote - Tracing mit Jaeger</h2><div class="slide-content"><div class="imageblock"><img src="images/jaeger-logo.png" alt="jaeger-logo" width="200"></div></div></section><section id="_tracing_in_quarkus"><h2>Tracing in Quarkus</h2><div class="slide-content"><h3>OpenTelemetry</h3><div class="paragraph"><p>OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von:</p></div>
 <div class="ulist"><ul><li><p>Metriken</p></li><li><p>Logs</p></li><li><p>Traces</p></li></ul></div></div></section><section id="_opentelemetry_tracing_in_quarkus"><h2>OpenTelemetry Tracing in Quarkus</h2><div class="slide-content"><h3>Dependencies</h3><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-xml hljs" data-noescape="true" data-lang="xml">&lt;dependency&gt;
     &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
@@ -469,7 +559,12 @@ Span span = tracer.spanBuilder("sendEmails").startSpan();
   -p 16686:16686 \
   -p 14268:14268 \
   -p 9411:9411 \
-  jaegertracing/all-in-one:1.6.0</code></pre></div></div></div></section></section>
+  jaegertracing/all-in-one:1.6.0</code></pre></div></div></div></section><section id="_kubernetes"><h2>Kubernetes</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">miniKube start --cpus 15 --memory 8g --driver=docker</code></pre></div></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml</code></pre></div></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl create namespace observability <i class="conum" data-value="1"></i><b>(1)</b>
+kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability <i class="conum" data-value="2"></i><b>(2)</b></code></pre></div></div>
+<div class="paragraph"><p>Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl apply -f .</code></pre></div></div></div></section></section>
 <section id="_danke_für_eure_aufmerksamkeit"><h2>Danke für eure Aufmerksamkeit!</h2></section>
 <section id="_quellen"><h2>Quellen</h2><div class="slide-content"><div class="ulist"><ul><li><p><a href="https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7" class="bare">https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7</a></p></li><li><p><a href="https://quarkus.io/guides/telemetry-micrometer" class="bare">https://quarkus.io/guides/telemetry-micrometer</a></p></li><li><p><a href="https://prometheus.io/" class="bare">https://prometheus.io/</a></p></li><li><p><a href="https://prometheus.io/docs/prometheus/latest/storage/" class="bare">https://prometheus.io/docs/prometheus/latest/storage/</a></p></li><li><p><a href="https://www.baeldung.com/quarkus-micrometer" class="bare">https://www.baeldung.com/quarkus-micrometer</a></p></li><li><p><a href="https://github.com/jaegertracing/jaeger" class="bare">https://github.com/jaegertracing/jaeger</a></p></li></ul></div></div></section></div></div><script src="revealjs/dist/reveal.js"></script><script>Array.prototype.slice.call(document.querySelectorAll('.slides section')).forEach(function(slide) {
   if (slide.getAttribute('data-background-color')) return;
