@@ -1,41 +1,10 @@
-= Telemetrie
-:author: Felix Fröller
-:email: f.froeller@students.htl-leonding.ac.at
-:revnumber: 1.0
-:revdate: {docdate}
-:revremark: SLIDEDEMO @ HTL Leonding
-:encoding: utf-8
-:lang: de
-:doctype: article
-// :icons: font
-:customcss: css/presentation.css
-//:revealjs_customtheme: css/sky.css
-//:revealjs_customtheme: css/black.css
-:revealjs_width: 1408
-:revealjs_height: 792
-:source-highlighter: highlightjs
-//:revealjs_parallaxBackgroundImage: images/background-landscape-light-orange.jpg
-//:revealjs_parallaxBackgroundSize: 4936px 2092px
-//:highlightjs-theme: css/atom-one-light.css
-// we want local served font-awesome fonts
-:iconfont-remote!:
-:iconfont-name: fonts/fontawesome/css/all
-//:revealjs_parallaxBackgroundImage: background-landscape-light-orange.jpg
-//:revealjs_parallaxBackgroundSize: 4936px 2092px
-ifdef::env-ide[]
-:imagesdir: ../images
-endif::[]
-ifndef::env-ide[]
-:imagesdir: images
-endif::[]
-//:revealjs_theme: sky
-//:title-slide-background-image: architecture-micrometer-prometheus.png
-:title-slide-transition: zoom
-:title-slide-transition-speed: fast
-
-Grundlagen, Micrometer und abgrenzung zu Tracing
+= Tracing Erklärung
+:toc:
+:icons: font
 
 == Einleitung
+
+Warum Verwendet man Telemetrie? Um diese Frage zu beantworten, müssen wir uns zuerst mit dem Problem beschäftigen, das Telemetrie löst.
 
 === Welches Problem gibt es?
 
@@ -342,31 +311,6 @@ docker run -d --name jaeger \
   -p 14268:14268 \
   -p 9411:9411 \
   jaegertracing/all-in-one:1.6.0
-----
-
-=== Kubernetes
-
-[source,bash]
-----
-miniKube start --cpus 15 --memory 8g --driver=docker
-----
-
-[source,bash]
-----
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
-----
-
-[source,bash]
-----
-kubectl create namespace observability # <1>
-kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability # <2>
-----
-
-Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:
-
-[source,bash]
-----
-kubectl apply -f .
 ----
 
 == Danke für eure Aufmerksamkeit!
