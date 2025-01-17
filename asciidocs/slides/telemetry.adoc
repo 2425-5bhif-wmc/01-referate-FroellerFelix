@@ -348,7 +348,7 @@ docker run -d --name jaeger \
 
 [source,bash]
 ----
-miniKube start --cpus 15 --memory=8g --driver=docker
+minikube start --cpus 15 --memory=8g --driver=docker
 ----
 
 [source,bash]
@@ -359,19 +359,11 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 [source,bash]
 ----
 kubectl create namespace observability # <1>
-kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability # <2>
-----
-
-Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:
-
-[source,bash]
-----
-kubectl apply -f .
 ----
 
 [source,bash]
 ----
-export WORKING_DIR=/tmp/_working_dir
+export WORKING_DIR=/tmp/jaeger
 export NAMESPACE=observability  # Change if needed
 ----
 
@@ -382,10 +374,30 @@ export NAMESPACE=observability  # Change if needed
 
 [source,bash]
 ----
+kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability # <2>
+----
+
+[source,bash]
+----
+kubectl delete secret jaeger-operator-service-cert -n observability
 kubectl create secret tls jaeger-operator-service-cert \
   --cert=${WORKING_DIR}/user.jaeger.crt \
   --key=${WORKING_DIR}/user.jaeger.key \
   -n observability
+----
+
+Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:
+
+[source,bash]
+----
+kubectl apply -f .
+----
+
+Es kommt ein Error deshalb einfach das ausführen:
+
+[source,bash]
+----
+kubectl apply -f ./jaeger.yaml
 ----
 
 == Danke für eure Aufmerksamkeit!
