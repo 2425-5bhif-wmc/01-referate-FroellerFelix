@@ -1,6 +1,12 @@
-= Tracing Erklärung
+= Telemetrie
 :toc:
 :icons: font
+ifdef::env-ide[]
+:imagesdir: ../images
+endif::[]
+ifndef::env-ide[]
+:imagesdir: images
+endif::[]
 
 == Einleitung
 
