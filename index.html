@@ -601,6 +601,7 @@ pre.rouge .gs {
 <li><a href="#_live_demo">4.3. Live Demo</a></li>
 <li><a href="#_custom_span">4.4. Custom Span</a></li>
 <li><a href="#_jaeger_in_docker">4.5. Jaeger in Docker</a></li>
+<li><a href="#_kubernetes">4.6. Kubernetes</a></li>
 </ul>
 </li>
 <li><a href="#_slides">5. Slides</a></li>
@@ -1118,6 +1119,65 @@ Tracing).</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_kubernetes"><a class="anchor" href="#_kubernetes"></a>4.6. Kubernetes</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">minikube start <span class="nt">--cpus</span> 15 <span class="nt">--memory</span><span class="o">=</span>8g <span class="nt">--driver</span><span class="o">=</span>docker</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">kubectl apply <span class="nt">-f</span> https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">kubectl create namespace observability <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="nb">export </span><span class="nv">WORKING_DIR</span><span class="o">=</span>/tmp/jaeger
+<span class="nb">export </span><span class="nv">NAMESPACE</span><span class="o">=</span>observability  <span class="c"># Change if needed</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">./generate_certs.sh</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">kubectl create <span class="nt">-f</span> https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">kubectl delete secret jaeger-operator-service-cert <span class="nt">-n</span> observability
+kubectl create secret tls jaeger-operator-service-cert <span class="se">\</span>
+  <span class="nt">--cert</span><span class="o">=</span><span class="k">${</span><span class="nv">WORKING_DIR</span><span class="k">}</span>/user.jaeger.crt <span class="se">\</span>
+  <span class="nt">--key</span><span class="o">=</span><span class="k">${</span><span class="nv">WORKING_DIR</span><span class="k">}</span>/user.jaeger.key <span class="se">\</span>
+  <span class="nt">-n</span> observability</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">kubectl apply <span class="nt">-f</span> .</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Es kommt ein Error deshalb einfach das ausführen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">kubectl apply <span class="nt">-f</span> ./jaeger.yaml</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1158,7 +1218,7 @@ Tracing).</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-18 17:19:47 UTC
+Last updated 2025-01-18 17:34:11 UTC
 </div>
 </div>
 </body>
