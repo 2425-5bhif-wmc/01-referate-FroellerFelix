@@ -565,7 +565,7 @@ Span span = tracer.spanBuilder("sendEmails").startSpan();
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">export WORKING_DIR=/tmp/jaeger
 export NAMESPACE=observability  # Change if needed</code></pre></div></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">./generate_certs.sh</code></pre></div></div>
-<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability <i class="conum" data-value="2"></i><b>(2)</b></code></pre></div></div>
+<div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml</code></pre></div></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl delete secret jaeger-operator-service-cert -n observability
 kubectl create secret tls jaeger-operator-service-cert \
   --cert=${WORKING_DIR}/user.jaeger.crt \
