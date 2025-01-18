@@ -374,7 +374,7 @@ export NAMESPACE=observability  # Change if needed
 
 [source,bash]
 ----
-kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability # <2>
+kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml
 ----
 
 [source,bash]
