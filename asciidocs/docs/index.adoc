@@ -4,7 +4,8 @@
 
 == Einleitung
 
-Warum Verwendet man Telemetrie? Um diese Frage zu beantworten, müssen wir uns zuerst mit dem Problem beschäftigen, das Telemetrie löst.
+Warum Verwendet man Telemetrie?
+Um diese Frage zu beantworten, müssen wir uns zuerst mit dem Problem beschäftigen, das Telemetrie löst.
 
 === Welches Problem gibt es?
 
@@ -315,7 +316,7 @@ docker run -d --name jaeger \
 
 == Slides
 
-* https://htl-leonding-college.github.io/asciidoctor-html-template/slides/telemetry.html[Slides]
+https://2425-5bhif-wmc.github.io/01-referate-FroellerFelix/slides/telemetry.html[Slides]
 
 == Quellen
 
