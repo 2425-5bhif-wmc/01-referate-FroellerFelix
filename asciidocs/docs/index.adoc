@@ -320,6 +320,62 @@ docker run -d --name jaeger \
   jaegertracing/all-in-one:1.6.0
 ----
 
+=== Kubernetes
+
+[source,bash]
+----
+minikube start --cpus 15 --memory=8g --driver=docker
+----
+
+[source,bash]
+----
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+----
+
+[source,bash]
+----
+kubectl create namespace observability # <1>
+----
+
+[source,bash]
+----
+export WORKING_DIR=/tmp/jaeger
+export NAMESPACE=observability  # Change if needed
+----
+
+[source,bash]
+----
+./generate_certs.sh
+----
+
+[source,bash]
+----
+kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml
+----
+
+[source,bash]
+----
+kubectl delete secret jaeger-operator-service-cert -n observability
+kubectl create secret tls jaeger-operator-service-cert \
+  --cert=${WORKING_DIR}/user.jaeger.crt \
+  --key=${WORKING_DIR}/user.jaeger.key \
+  -n observability
+----
+
+Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:
+
+[source,bash]
+----
+kubectl apply -f .
+----
+
+Es kommt ein Error deshalb einfach das ausführen:
+
+[source,bash]
+----
+kubectl apply -f ./jaeger.yaml
+----
+
 == Slides
 
 https://2425-5bhif-wmc.github.io/01-referate-FroellerFelix/slides/telemetry.html[Slides]
