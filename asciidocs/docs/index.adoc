@@ -40,7 +40,7 @@ Um diese Frage zu beantworten, müssen wir uns zuerst mit dem Problem beschäfti
 * Metriken: CPU- und Speicherauslastung.
 * Logs: Fehlermeldungen und Debug-Informationen.
 * Tracing
-** Nachverfolgung von Request durch verschiedene Services. https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7[(request-flows)]
+** Nachverfolgung von Requests und wie lange sie wofür brauchen.
 ** Bottlenecks identifizieren
 
 == Micrometer
@@ -194,6 +194,10 @@ http://localhost:3000
 * OpenTelemetry (vollständige Lösung für Telemetrie inkl.
 Tracing).
 
+=== Beispiel
+
+Das Beispiel ist in diesem Repository unter `quarkus-micrometer-demo` zu finden.
+
 == Tracing
 
 === Welches Problem gibt es?
@@ -212,9 +216,15 @@ Tracing).
 
 image::spans-traces.png[spans-traces]
 
-=== Daten Sammeln mit OpenTelemetry
+Ein Trace besteht aus Aufgaben über eine Zeitspanne, sogenannte Spans.
 
-OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von Metriken, Logs und Traces für Observability in modernen Anwendungen.
+Theoretisches Beispiel, welches so in LeoVote vorkommen könnte und sich an der obigen Abbildung orientiert:
+
+* *Span A* - Wahleinladungen senden
+** *Span B* - E-Mails vorbereiten
+*** *Span C* - DB Abfrage für E-Mails der Wähler
+*** *Span D* - Link für die E-Mail generieren
+** *Span E* - Emails versenden
 
 == LiveDemo: LeoVote - Tracing mit Jaeger
 
@@ -230,9 +240,13 @@ OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von:
 * Logs
 * Traces
 
+In diesem Beispiel verwenden wir OpenTelemetry Tracing in Quarkus. Jaeger Tracing wird später die Daten von OpenTelemetry visualisieren.
+
 === OpenTelemetry Tracing in Quarkus
 
 ==== Dependencies
+
+Um OpenTelemetry Tracing in Quarkus zu verwenden, müssen wir die folgenden Abhängigkeiten hinzufügen:
 
 [source,xml]
 ----
@@ -248,19 +262,25 @@ OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von:
 
 ==== Application.properties
 
+In der `application.properties`-Datei müssen wir die folgenden Einstellungen vornehmen:
+
 [source,yaml]
 ----
 # Enable OpenTelemetry tracing
 
-quarkus.otel.exporter.otlp.endpoint=http://localhost:4317
+quarkus.otel.exporter.otlp.endpoint=http://localhost:4317 <1>
 
-quarkus.otel.traces.sampler=always_on
+quarkus.otel.traces.sampler=always_on <2>
 
-quarkus.otel.service.name=quarkus-backend
+quarkus.otel.service.name=quarkus-backend <3>
 
 # For JDBC telemetry
-quarkus.datasource.jdbc.telemetry=true
+quarkus.datasource.jdbc.telemetry=true <4>
 ----
+<1> Der Endpunkt, an den die Tracing-Daten gesendet werden.
+<2> Der Traces-Sampler, der bestimmt, ob ein Trace erfasst und exportiert wird. Die Einstellung `always_on` bedeutet, dass alle Traces erfasst werden.
+<3> Der Name des Services, der in den Traces angezeigt wird. Dieser Name wird in Jaeger als Source verwendet.
+<4> Aktiviert die Erfassung von JDBC-Telemetrie. Damit können wir die Dauer von Datenbankabfragen messen.
 
 ==== Jaeger Tracing
 
