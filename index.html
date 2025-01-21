@@ -584,6 +584,7 @@ pre.rouge .gs {
 <li><a href="#_schritt_5_prometheus">2.8. Schritt 5: Prometheus</a></li>
 <li><a href="#_schritt_6_grafana">2.9. Schritt 6: Grafana</a></li>
 <li><a href="#_alternativen_zu_micrometer">2.10. Alternativen zu Micrometer</a></li>
+<li><a href="#_beispiel">2.11. Beispiel</a></li>
 </ul>
 </li>
 <li><a href="#_tracing">3. Tracing</a>
@@ -591,7 +592,6 @@ pre.rouge .gs {
 <li><a href="#_welches_problem_gibt_es_2">3.1. Welches Problem gibt es?</a></li>
 <li><a href="#_was_ist_tracing">3.2. Was ist Tracing?</a></li>
 <li><a href="#_was_ist_ein_trace">3.3. Was ist ein Trace?</a></li>
-<li><a href="#_daten_sammeln_mit_opentelemetry">3.4. Daten Sammeln mit OpenTelemetry</a></li>
 </ul>
 </li>
 <li><a href="#_livedemo_leovote_tracing_mit_jaeger">4. LiveDemo: LeoVote - Tracing mit Jaeger</a>
@@ -704,7 +704,7 @@ Um diese Frage zu beantworten, müssen wir uns zuerst mit dem Problem beschäfti
 <div class="ulist">
 <ul>
 <li>
-<p>Nachverfolgung von Request durch verschiedene Services. <a href="https://medium.com/@stackify1/demystifying-observability-telemetry-logs-distributed-tracing-and-monitoring-vs-logging-8f0b972259f7">(request-flows)</a></p>
+<p>Nachverfolgung von Requests und wie lange sie wofür brauchen.</p>
 </li>
 <li>
 <p>Bottlenecks identifizieren</p>
@@ -938,6 +938,12 @@ Tracing).</p>
 </ul>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_beispiel"><a class="anchor" href="#_beispiel"></a>2.11. Beispiel</h3>
+<div class="paragraph">
+<p>Das Beispiel ist in diesem Repository unter <code>quarkus-micrometer-demo</code> zu finden.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -982,11 +988,38 @@ Tracing).</p>
 <img src="images/spans-traces.png" alt="spans-traces">
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_daten_sammeln_mit_opentelemetry"><a class="anchor" href="#_daten_sammeln_mit_opentelemetry"></a>3.4. Daten Sammeln mit OpenTelemetry</h3>
 <div class="paragraph">
-<p>OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von Metriken, Logs und Traces für Observability in modernen Anwendungen.</p>
+<p>Ein Trace besteht aus Aufgaben über eine Zeitspanne, sogenannte Spans.</p>
+</div>
+<div class="paragraph">
+<p>Theoretisches Beispiel, welches so in LeoVote vorkommen könnte und sich an der obigen Abbildung orientiert:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Span A</strong> - Wahleinladungen senden</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Span B</strong> - E-Mails vorbereiten</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Span C</strong> - DB Abfrage für E-Mails der Wähler</p>
+</li>
+<li>
+<p><strong>Span D</strong> - Link für die E-Mail generieren</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Span E</strong> - Emails versenden</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1019,12 +1052,18 @@ Tracing).</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>In diesem Beispiel verwenden wir OpenTelemetry Tracing in Quarkus. Jaeger Tracing wird später die Daten von OpenTelemetry visualisieren.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_opentelemetry_tracing_in_quarkus"><a class="anchor" href="#_opentelemetry_tracing_in_quarkus"></a>4.2. OpenTelemetry Tracing in Quarkus</h3>
 <div class="sect3">
 <h4 id="_dependencies"><a class="anchor" href="#_dependencies"></a>4.2.1. Dependencies</h4>
+<div class="paragraph">
+<p>Um OpenTelemetry Tracing in Quarkus zu verwenden, müssen wir die folgenden Abhängigkeiten hinzufügen:</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
@@ -1040,19 +1079,42 @@ Tracing).</p>
 </div>
 <div class="sect3">
 <h4 id="_application_properties"><a class="anchor" href="#_application_properties"></a>4.2.2. Application.properties</h4>
+<div class="paragraph">
+<p>In der <code>application.properties</code>-Datei müssen wir die folgenden Einstellungen vornehmen:</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="yaml"><span class="c1"># Enable OpenTelemetry tracing</span>
 
-<span class="s">quarkus.otel.exporter.otlp.endpoint=http://localhost:4317</span>
+<span class="s">quarkus.otel.exporter.otlp.endpoint=http://localhost:4317</span> <i class="conum" data-value="1"></i><b>(1)</b>
 
-<span class="s">quarkus.otel.traces.sampler=always_on</span>
+<span class="s">quarkus.otel.traces.sampler=always_on</span> <i class="conum" data-value="2"></i><b>(2)</b>
 
-<span class="s">quarkus.otel.service.name=quarkus-backend</span>
+<span class="s">quarkus.otel.service.name=quarkus-backend</span> <i class="conum" data-value="3"></i><b>(3)</b>
 
 <span class="c1"># For JDBC telemetry</span>
-<span class="s">quarkus.datasource.jdbc.telemetry=true</span></code></pre>
+<span class="s">quarkus.datasource.jdbc.telemetry=true</span> <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Der Endpunkt, an den die Tracing-Daten gesendet werden.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Der Traces-Sampler, der bestimmt, ob ein Trace erfasst und exportiert wird. Die Einstellung <code>always_on</code> bedeutet, dass alle Traces erfasst werden.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Der Name des Services, der in den Traces angezeigt wird. Dieser Name wird in Jaeger als Source verwendet.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Aktiviert die Erfassung von JDBC-Telemetrie. Damit können wir die Dauer von Datenbankabfragen messen.</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -1218,7 +1280,7 @@ kubectl create secret tls jaeger-operator-service-cert <span class="se">\</span>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-18 17:34:11 UTC
+Last updated 2025-01-21 12:41:40 UTC
 </div>
 </div>
 </body>
