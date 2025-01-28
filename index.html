@@ -601,7 +601,8 @@ pre.rouge .gs {
 <li><a href="#_live_demo">4.3. Live Demo</a></li>
 <li><a href="#_custom_span">4.4. Custom Span</a></li>
 <li><a href="#_jaeger_in_docker">4.5. Jaeger in Docker</a></li>
-<li><a href="#_kubernetes">4.6. Kubernetes</a></li>
+<li><a href="#_deployment_auf_kubernetes">4.6. Deployment auf Kubernetes</a></li>
+<li><a href="#_deployment_auf_vm">4.7. Deployment auf VM</a></li>
 </ul>
 </li>
 <li><a href="#_slides">5. Slides</a></li>
@@ -1053,7 +1054,8 @@ Tracing).</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>In diesem Beispiel verwenden wir OpenTelemetry Tracing in Quarkus. Jaeger Tracing wird später die Daten von OpenTelemetry visualisieren.</p>
+<p>In diesem Beispiel verwenden wir OpenTelemetry Tracing in Quarkus.
+Jaeger Tracing wird später die Daten von OpenTelemetry visualisieren.</p>
 </div>
 </div>
 </div>
@@ -1104,15 +1106,18 @@ Tracing).</p>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Der Traces-Sampler, der bestimmt, ob ein Trace erfasst und exportiert wird. Die Einstellung <code>always_on</code> bedeutet, dass alle Traces erfasst werden.</td>
+<td>Der Traces-Sampler, der bestimmt, ob ein Trace erfasst und exportiert wird.
+Die Einstellung <code>always_on</code> bedeutet, dass alle Traces erfasst werden.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Der Name des Services, der in den Traces angezeigt wird. Dieser Name wird in Jaeger als Source verwendet.</td>
+<td>Der Name des Services, der in den Traces angezeigt wird.
+Dieser Name wird in Jaeger als Source verwendet.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Aktiviert die Erfassung von JDBC-Telemetrie. Damit können wir die Dauer von Datenbankabfragen messen.</td>
+<td>Aktiviert die Erfassung von JDBC-Telemetrie.
+Damit können wir die Dauer von Datenbankabfragen messen.</td>
 </tr>
 </table>
 </div>
@@ -1182,10 +1187,18 @@ Tracing).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_kubernetes"><a class="anchor" href="#_kubernetes"></a>4.6. Kubernetes</h3>
+<h3 id="_deployment_auf_kubernetes"><a class="anchor" href="#_deployment_auf_kubernetes"></a>4.6. Deployment auf Kubernetes</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="bash">minikube start <span class="nt">--cpus</span> 15 <span class="nt">--memory</span><span class="o">=</span>8g <span class="nt">--driver</span><span class="o">=</span>docker</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add ingress.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">minikube addons <span class="nb">enable </span>ingress</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1195,7 +1208,7 @@ Tracing).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">kubectl create namespace observability <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">kubectl create namespace observability</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1206,12 +1219,18 @@ Tracing).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">./generate_certs.sh</code></pre>
+<pre class="rouge highlight"><code data-lang="bash"><span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">${</span><span class="nv">WORKING_DIR</span><span class="k">}</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">WORKING_DIR</span><span class="k">}</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">kubectl create <span class="nt">-f</span> https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">./cert_generation.sh</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">kubectl create <span class="nt">-f</span> https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml <span class="nt">-n</span> observability</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1237,6 +1256,232 @@ kubectl create secret tls jaeger-operator-service-cert <span class="se">\</span>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="bash">kubectl apply <span class="nt">-f</span> ./jaeger.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Um darauf zuzugreifen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">minikube ip</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deployment_auf_vm"><a class="anchor" href="#_deployment_auf_vm"></a>4.7. Deployment auf VM</h3>
+<div class="paragraph">
+<p>Das LeoVote Projekt wurde auf eine virtuelle Machine deployed.
+Es wurde folgendermaßen realisiert.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Backend builden</p>
+<div class="ulist">
+<ul>
+<li>
+<p>mvn build --clean</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Frontend builden</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ng build</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Auf Server kopieren mit "scp"</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Jar-Datei und frontend Verzeichnis auf den Server kopieren</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="_automatisches_starten"><a class="anchor" href="#_automatisches_starten"></a>4.7.1. Automatisches Starten</h4>
+<div class="paragraph">
+<p>Damit auch bei einem Server Neustart das Front- und Backend automatisch im Hintergrund startet sind folgende Schritte notwendig:</p>
+</div>
+<div class="paragraph">
+<p>Shellscripts in <code>/opt/scripts</code> anlegen:</p>
+</div>
+<div class="paragraph">
+<p>backend.sh</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/bin/bash</span>
+<span class="nb">cd</span> /home/lvadm <span class="o">&amp;&amp;</span> java <span class="nt">-jar</span> ./backend-1.0-SNAPSHOT-runner.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>jaeger.sh</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/bin/bash</span>
+
+docker run <span class="nt">-d</span> <span class="nt">--name</span> jaeger <span class="se">\</span>
+  <span class="nt">-e</span> <span class="nv">COLLECTOR_ZIPKIN_HTTP_PORT</span><span class="o">=</span>9411 <span class="se">\</span>
+  <span class="nt">-p</span> 5775:5775/udp <span class="se">\</span>
+  <span class="nt">-p</span> 6831:6831/udp <span class="se">\</span>
+  <span class="nt">-p</span> 6832:6832/udp <span class="se">\</span>
+  <span class="nt">-p</span> 5778:5778 <span class="se">\</span>
+  <span class="nt">-p</span> 16686:16686 <span class="se">\</span>
+  <span class="nt">-p</span> 14268:14268 <span class="se">\</span>
+  <span class="nt">-p</span> 9411:9411 <span class="se">\</span>
+  jaegertracing/all-in-one:1.62.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In den Auto-Start hinzufügen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">crontab <span class="nt">-e</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Folgendes hinzufügen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">@reboot screen -dm -S backend /opt/scripts/backend.sh
+@reboot screen -dm -S jaeger /opt/scripts/jaeger.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>nginx.conf in <code>/etc/nginx/sites-enabled/default</code> anpassen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">server {
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name leovote.htl-leonding.ac.at;
+
+	location /api/services {
+		proxy_pass http://localhost:16686/api/services;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+	location /api/traces {
+		proxy_pass http://localhost:16686/api/traces;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+    location /api/dependencies {
+        proxy_pass http://localhost:16686/api/dependencies;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api/metrics {
+        proxy_pass http://localhost:16686/api/metrics/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api/monitor {
+        proxy_pass http://localhost:16686/api/monitor;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+	location /api/ {
+		proxy_pass http://localhost:8080/; # Quarkus application
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+
+	location / {
+		root /home/lvadm/frontend;
+		try_files $uri $uri/ /index.html;
+	}
+
+	location /tracing/ {
+		proxy_pass http://localhost:16686/;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		# Fix paths for static files
+		sub_filter '/static/' '/tracing/static/';
+		sub_filter_once off;
+
+		# Required for sub_filter to work
+		proxy_http_version 1.1;
+		proxy_set_header Accept-Encoding ""; # Ensure sub_filter processes responses
+	}
+
+	location /tracing/static/ {
+		proxy_pass http://localhost:16686/static/;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/leovote.htl-leonding.ac.at/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/leovote.htl-leonding.ac.at/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+    if ($host = leovote.htl-leonding.ac.at) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	server_name leovote.htl-leonding.ac.at;
+    return 404; # managed by Certbot
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>nginx neu starten:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="nb">sudo </span>systemctl restart nginx</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternativ kann auch der Server neu gestartet werden. Das Deployment ist auf <a href="https://leovote.htl-leonding.ac.at" class="bare">https://leovote.htl-leonding.ac.at</a> abrufbar.<br>
+Das Jaeger-UI ist hier zu finden: <a href="https://leovote.htl-leonding.ac.at/tracing" class="bare">https://leovote.htl-leonding.ac.at/tracing</a></p>
 </div>
 </div>
 </div>
@@ -1280,7 +1525,7 @@ kubectl create secret tls jaeger-operator-service-cert <span class="se">\</span>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-21 12:41:40 UTC
+Last updated 2025-01-28 12:14:09 UTC
 </div>
 </div>
 </body>
