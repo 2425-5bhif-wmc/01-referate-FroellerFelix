@@ -240,7 +240,8 @@ OpenTelemetry ist ein Open-Source-Framework zur Sammlung und Verarbeitung von:
 * Logs
 * Traces
 
-In diesem Beispiel verwenden wir OpenTelemetry Tracing in Quarkus. Jaeger Tracing wird später die Daten von OpenTelemetry visualisieren.
+In diesem Beispiel verwenden wir OpenTelemetry Tracing in Quarkus.
+Jaeger Tracing wird später die Daten von OpenTelemetry visualisieren.
 
 === OpenTelemetry Tracing in Quarkus
 
@@ -277,10 +278,14 @@ quarkus.otel.service.name=quarkus-backend <3>
 # For JDBC telemetry
 quarkus.datasource.jdbc.telemetry=true <4>
 ----
+
 <1> Der Endpunkt, an den die Tracing-Daten gesendet werden.
-<2> Der Traces-Sampler, der bestimmt, ob ein Trace erfasst und exportiert wird. Die Einstellung `always_on` bedeutet, dass alle Traces erfasst werden.
-<3> Der Name des Services, der in den Traces angezeigt wird. Dieser Name wird in Jaeger als Source verwendet.
-<4> Aktiviert die Erfassung von JDBC-Telemetrie. Damit können wir die Dauer von Datenbankabfragen messen.
+<2> Der Traces-Sampler, der bestimmt, ob ein Trace erfasst und exportiert wird.
+Die Einstellung `always_on` bedeutet, dass alle Traces erfasst werden.
+<3> Der Name des Services, der in den Traces angezeigt wird.
+Dieser Name wird in Jaeger als Source verwendet.
+<4> Aktiviert die Erfassung von JDBC-Telemetrie.
+Damit können wir die Dauer von Datenbankabfragen messen.
 
 ==== Jaeger Tracing
 
@@ -340,11 +345,18 @@ docker run -d --name jaeger \
   jaegertracing/all-in-one:1.6.0
 ----
 
-=== Kubernetes
+=== Deployment auf Kubernetes
 
 [source,bash]
 ----
 minikube start --cpus 15 --memory=8g --driver=docker
+----
+
+Add ingress.
+
+[source,bash]
+----
+minikube addons enable ingress
 ----
 
 [source,bash]
@@ -354,7 +366,7 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 
 [source,bash]
 ----
-kubectl create namespace observability # <1>
+kubectl create namespace observability
 ----
 
 [source,bash]
@@ -365,12 +377,18 @@ export NAMESPACE=observability  # Change if needed
 
 [source,bash]
 ----
-./generate_certs.sh
+rm -rf ${WORKING_DIR}
+mkdir -p ${WORKING_DIR}
 ----
 
 [source,bash]
 ----
-kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml
+./cert_generation.sh
+----
+
+[source,bash]
+----
+kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability
 ----
 
 [source,bash]
@@ -395,6 +413,192 @@ Es kommt ein Error deshalb einfach das ausführen:
 ----
 kubectl apply -f ./jaeger.yaml
 ----
+
+Um darauf zuzugreifen:
+
+[source,bash]
+----
+minikube ip
+----
+
+=== Deployment auf VM
+
+Das LeoVote Projekt wurde auf eine virtuelle Machine deployed.
+Es wurde folgendermaßen realisiert.
+
+. Backend builden
+* mvn build --clean
+. Frontend builden
+* ng build
+. Auf Server kopieren mit "scp"
+* Jar-Datei und frontend Verzeichnis auf den Server kopieren
+
+==== Automatisches Starten
+
+Damit auch bei einem Server Neustart das Front- und Backend automatisch im Hintergrund startet sind folgende Schritte notwendig:
+
+Shellscripts in `/opt/scripts` anlegen:
+
+backend.sh
+
+[source,bash]
+----
+#!/bin/bash
+cd /home/lvadm && java -jar ./backend-1.0-SNAPSHOT-runner.jar
+----
+
+jaeger.sh
+
+[source,bash]
+----
+#!/bin/bash
+
+docker run -d --name jaeger \
+  -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
+  -p 5775:5775/udp \
+  -p 6831:6831/udp \
+  -p 6832:6832/udp \
+  -p 5778:5778 \
+  -p 16686:16686 \
+  -p 14268:14268 \
+  -p 9411:9411 \
+  jaegertracing/all-in-one:1.62.0
+
+----
+
+In den Auto-Start hinzufügen:
+
+[source,bash]
+----
+crontab -e
+----
+
+Folgendes hinzufügen:
+[source, text]
+----
+@reboot screen -dm -S backend /opt/scripts/backend.sh
+@reboot screen -dm -S jaeger /opt/scripts/jaeger.sh
+----
+
+nginx.conf in `/etc/nginx/sites-enabled/default` anpassen:
+
+[source, text]
+----
+server {
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name leovote.htl-leonding.ac.at;
+
+	location /api/services {
+		proxy_pass http://localhost:16686/api/services;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+	location /api/traces {
+		proxy_pass http://localhost:16686/api/traces;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+    location /api/dependencies {
+        proxy_pass http://localhost:16686/api/dependencies;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api/metrics {
+        proxy_pass http://localhost:16686/api/metrics/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api/monitor {
+        proxy_pass http://localhost:16686/api/monitor;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+	location /api/ {
+		proxy_pass http://localhost:8080/; # Quarkus application
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+
+	location / {
+		root /home/lvadm/frontend;
+		try_files $uri $uri/ /index.html;
+	}
+
+	location /tracing/ {
+		proxy_pass http://localhost:16686/;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		# Fix paths for static files
+		sub_filter '/static/' '/tracing/static/';
+		sub_filter_once off;
+
+		# Required for sub_filter to work
+		proxy_http_version 1.1;
+		proxy_set_header Accept-Encoding ""; # Ensure sub_filter processes responses
+	}
+
+	location /tracing/static/ {
+		proxy_pass http://localhost:16686/static/;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/leovote.htl-leonding.ac.at/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/leovote.htl-leonding.ac.at/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+    if ($host = leovote.htl-leonding.ac.at) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	server_name leovote.htl-leonding.ac.at;
+    return 404; # managed by Certbot
+}
+----
+
+nginx neu starten:
+
+[source,bash]
+----
+sudo systemctl restart nginx
+----
+
+Alternativ kann auch der Server neu gestartet werden. Das Deployment ist auf https://leovote.htl-leonding.ac.at abrufbar. +
+Das Jaeger-UI ist hier zu finden: https://leovote.htl-leonding.ac.at/tracing
 
 == Slides
 
