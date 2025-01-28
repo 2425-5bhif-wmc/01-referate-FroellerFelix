@@ -1251,7 +1251,10 @@ kubectl create secret tls jaeger-operator-service-cert <span class="se">\</span>
 </div>
 </div>
 <div class="paragraph">
-<p>Es kommt ein Error deshalb einfach das ausführen:</p>
+<p>Aktuell kommt es noch zu einem Fehler mit dem Zertifikat, vermutlich weil es ein self-signed Certificate ist und nicht von einer CA ist.</p>
+</div>
+<div class="paragraph">
+<p>In Vergangenheit konnte das Problem hin und wieder durch das Ausführen des folgenden Commands behoben werden:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1265,6 +1268,21 @@ kubectl create secret tls jaeger-operator-service-cert <span class="se">\</span>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="bash">minikube ip</code></pre>
 </div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Das Kubernetes Deployment ist zurzeit noch Work-In-Progress (WIP).
+Nach dem Beheben des Zertifikatsfehlers und Überprüfen der Nginx-Config sollte es auf Minikube funktionieren.<br>
+Für das Deployment auf die LeoCloud muss Jaeger-Tracing angepasst werden, denn dort darf man nur in seinem eigenem Namespace arbeiten und keinen neuen anlegen.
+Dasselbe gilt auch für den Cert-Manager.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -1480,7 +1498,8 @@ server {
 </div>
 </div>
 <div class="paragraph">
-<p>Alternativ kann auch der Server neu gestartet werden. Das Deployment ist auf <a href="https://leovote.htl-leonding.ac.at" class="bare">https://leovote.htl-leonding.ac.at</a> abrufbar.<br>
+<p>Alternativ kann auch der Server neu gestartet werden.
+Das Deployment ist auf <a href="https://leovote.htl-leonding.ac.at" class="bare">https://leovote.htl-leonding.ac.at</a> abrufbar.<br>
 Das Jaeger-UI ist hier zu finden: <a href="https://leovote.htl-leonding.ac.at/tracing" class="bare">https://leovote.htl-leonding.ac.at/tracing</a></p>
 </div>
 </div>
@@ -1525,7 +1544,7 @@ Das Jaeger-UI ist hier zu finden: <a href="https://leovote.htl-leonding.ac.at/tr
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-28 12:14:09 UTC
+Last updated 2025-01-28 12:24:10 UTC
 </div>
 </div>
 </body>
