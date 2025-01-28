@@ -407,7 +407,9 @@ Im Leovote projekt in den k8s Ordner wechseln und folgendes ausführen:
 kubectl apply -f .
 ----
 
-Es kommt ein Error deshalb einfach das ausführen:
+Aktuell kommt es noch zu einem Fehler mit dem Zertifikat, vermutlich weil es ein self-signed Certificate ist und nicht von einer CA ist.
+
+In Vergangenheit konnte das Problem hin und wieder durch das Ausführen des folgenden Commands behoben werden:
 
 [source,bash]
 ----
@@ -420,6 +422,11 @@ Um darauf zuzugreifen:
 ----
 minikube ip
 ----
+
+WARNING: Das Kubernetes Deployment ist zurzeit noch Work-In-Progress (WIP).
+Nach dem Beheben des Zertifikatsfehlers und Überprüfen der Nginx-Config sollte es auf Minikube funktionieren. +
+Für das Deployment auf die LeoCloud muss Jaeger-Tracing angepasst werden, denn dort darf man nur in seinem eigenem Namespace arbeiten und keinen neuen anlegen.
+Dasselbe gilt auch für den Cert-Manager.
 
 === Deployment auf VM
 
@@ -474,7 +481,8 @@ crontab -e
 ----
 
 Folgendes hinzufügen:
-[source, text]
+
+[source,text]
 ----
 @reboot screen -dm -S backend /opt/scripts/backend.sh
 @reboot screen -dm -S jaeger /opt/scripts/jaeger.sh
@@ -482,7 +490,7 @@ Folgendes hinzufügen:
 
 nginx.conf in `/etc/nginx/sites-enabled/default` anpassen:
 
-[source, text]
+[source,text]
 ----
 server {
 	index index.html index.htm index.nginx-debian.html;
@@ -597,7 +605,8 @@ nginx neu starten:
 sudo systemctl restart nginx
 ----
 
-Alternativ kann auch der Server neu gestartet werden. Das Deployment ist auf https://leovote.htl-leonding.ac.at abrufbar. +
+Alternativ kann auch der Server neu gestartet werden.
+Das Deployment ist auf https://leovote.htl-leonding.ac.at abrufbar. +
 Das Jaeger-UI ist hier zu finden: https://leovote.htl-leonding.ac.at/tracing
 
 == Slides
