@@ -552,6 +552,8 @@ Span span = tracer.spanBuilder("sendEmails").startSpan();
         return Uni.createFrom().item(Response.ok().entity("{\"message\": \"Emails are being sent asynchronously.\"}").build());
     }</code></pre></div></div></div></section><section id="_jaeger_in_docker"><h2>Jaeger in Docker</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">docker run -d --name jaeger \
   -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
+  -p 4317:4317 \
+  -p 4318:4318 \
   -p 5775:5775/udp \
   -p 6831:6831/udp \
   -p 6832:6832/udp \
@@ -559,7 +561,7 @@ Span span = tracer.spanBuilder("sendEmails").startSpan();
   -p 16686:16686 \
   -p 14268:14268 \
   -p 9411:9411 \
-  jaegertracing/all-in-one:1.6.0</code></pre></div></div></div></section><section id="_kubernetes"><h2>Kubernetes</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">minikube start --cpus 15 --memory=8g --driver=docker</code></pre></div></div>
+  jaegertracing/all-in-one:1.62.0</code></pre></div></div></div></section><section id="_kubernetes"><h2>Kubernetes</h2><div class="slide-content"><div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">minikube start --cpus 15 --memory=8g --driver=docker</code></pre></div></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml</code></pre></div></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">kubectl create namespace observability <i class="conum" data-value="1"></i><b>(1)</b></code></pre></div></div>
 <div class="listingblock"><div class="content"><pre class="highlightjs highlight"><code class="language-bash hljs" data-noescape="true" data-lang="bash">export WORKING_DIR=/tmp/jaeger

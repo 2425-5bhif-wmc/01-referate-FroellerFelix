@@ -1175,6 +1175,8 @@ Damit können wir die Dauer von Datenbankabfragen messen.</td>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="bash">docker run <span class="nt">-d</span> <span class="nt">--name</span> jaeger <span class="se">\</span>
   <span class="nt">-e</span> <span class="nv">COLLECTOR_ZIPKIN_HTTP_PORT</span><span class="o">=</span>9411 <span class="se">\</span>
+  <span class="nt">-p</span> 4317:4317 <span class="se">\</span>
+  <span class="nt">-p</span> 4318:4318 <span class="se">\</span>
   <span class="nt">-p</span> 5775:5775/udp <span class="se">\</span>
   <span class="nt">-p</span> 6831:6831/udp <span class="se">\</span>
   <span class="nt">-p</span> 6832:6832/udp <span class="se">\</span>
@@ -1182,7 +1184,7 @@ Damit können wir die Dauer von Datenbankabfragen messen.</td>
   <span class="nt">-p</span> 16686:16686 <span class="se">\</span>
   <span class="nt">-p</span> 14268:14268 <span class="se">\</span>
   <span class="nt">-p</span> 9411:9411 <span class="se">\</span>
-  jaegertracing/all-in-one:1.6.0</code></pre>
+  jaegertracing/all-in-one:1.62.0</code></pre>
 </div>
 </div>
 </div>
@@ -1351,6 +1353,8 @@ Es wurde folgendermaßen realisiert.</p>
 
 docker run <span class="nt">-d</span> <span class="nt">--name</span> jaeger <span class="se">\</span>
   <span class="nt">-e</span> <span class="nv">COLLECTOR_ZIPKIN_HTTP_PORT</span><span class="o">=</span>9411 <span class="se">\</span>
+  <span class="nt">-p</span> 4317:4317 <span class="se">\</span>
+  <span class="nt">-p</span> 4318:4318 <span class="se">\</span>
   <span class="nt">-p</span> 5775:5775/udp <span class="se">\</span>
   <span class="nt">-p</span> 6831:6831/udp <span class="se">\</span>
   <span class="nt">-p</span> 6832:6832/udp <span class="se">\</span>
@@ -1544,7 +1548,7 @@ Das Jaeger-UI ist hier zu finden: <a href="https://leovote.htl-leonding.ac.at/tr
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-28 12:24:10 UTC
+Last updated 2025-01-30 08:11:37 UTC
 </div>
 </div>
 </body>
